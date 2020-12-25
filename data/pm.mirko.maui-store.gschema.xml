@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="mauistore">
+	<schema id="pm.mirko.maui-store" path="/pm/mirko/maui-store/">
+	</schema>
+</schemalist>

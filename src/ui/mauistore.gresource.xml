@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/pm/mirko/maui-store">
+    <file>window.ui</file>
+    <file>list.ui</file>
+    <file>list-entry.ui</file>
+  </gresource>
+</gresources>
