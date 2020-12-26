@@ -17,6 +17,34 @@
 
 from gi.repository import Gtk
 
+@Gtk.Template(resource_path='/pm/mirko/maui-store/list-entry.ui')
+class MauiStoreListEntry(Gtk.Box):
+    __gtype_name__ = 'MauiStoreListEntry'
+
+    img_package = Gtk.Template.Child()
+    package_name = Gtk.Template.Child()
+    package_description = Gtk.Template.Child()
+    btn_install = Gtk.Template.Child()
+
+    def __init__(self, window, package, **kwargs):
+        super().__init__(**kwargs)
+
+        '''
+        Initialize template
+        '''
+        self.init_template()
+
+        '''
+        Common variables
+        '''
+        self.window = window
+        self.repository = window.repository
+
+        '''
+        Populate widgets with data
+        '''
+        self.package_name.set_text(package.get("name"))
+
 @Gtk.Template(resource_path='/pm/mirko/maui-store/list.ui')
 class MauiStoreList(Gtk.Box):
     __gtype_name__ = 'MauiStoreList'
@@ -29,14 +57,11 @@ class MauiStoreList(Gtk.Box):
         '''
         self.init_template()
 
-@Gtk.Template(resource_path='/pm/mirko/maui-store/list-entry.ui')
-class MauiStoreListEntry(Gtk.Box):
-    __gtype_name__ = 'MauiStoreListEntry'
-
-    def __init__(self, window, **kwargs):
-        super().__init__(**kwargs)
-
         '''
-        Initialize template
+        Common variables
         '''
-        self.init_template()
+        self.window = window
+        self.repository = window.repository
+
+        for package in self.repository.list_packages():
+            self.add(MauiStoreListEntry(self.window, package))
