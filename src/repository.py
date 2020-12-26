@@ -19,6 +19,8 @@ import os, logging, urllib.request, json
 
 from pathlib import Path
 
+logging.basicConfig(level=logging.DEBUG)
+
 class MauiStoreRepository:
 
     repository_base_url = "https://raw.githubusercontent.com/AppImage/appimage.github.io/master/database/"
@@ -74,19 +76,27 @@ class MauiStoreRepository:
             logging.warning("No valid manifest found for `%s`" % name)
             return False
 
+    '''
+    Fetch packages first from local repository or online if missing cache
+    '''
     def fetch_packages(self):
         cache_packages = []
 
         try:
             local_repository = open(self.repository_local_index)
             packages = json.load(local_repository)
+            print(packages)
             local_repository.close()
+            local=True
+            logging.info("Local repository found.")
         except:
+            logging.info("No local repository found, fetching from online ..")
+            local=False
             with urllib.request.urlopen(self.repository_index) as url:
                 packages = json.loads(url.read().decode("utf-8"))
 
         '''
-        TODO: remove filter 0:20
+        TODO: remove filter  0:20
         '''
         for package in packages[0:20]:
             package_data = self.get_package(package.get("title"))
@@ -111,11 +121,16 @@ class MauiStoreRepository:
         '''
         Cache packages to local repository
         '''
-        with open(self.repository_local_index, "w") as local_repository:
-            json.dump(cache_packages, local_repository, indent=4)
-            local_repository.close()
+        if not local:
+            logging.info("Caching packages to local repository ..")
+            with open(self.repository_local_index, "w") as local_repository:
+                json.dump(cache_packages, local_repository, indent=4)
+                local_repository.close()
 
 
+    '''
+    List packages with items limit
+    '''
     def list_packages(self, items=20):
         return self.cache_packages[0:items]
 
