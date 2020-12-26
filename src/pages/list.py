@@ -44,6 +44,8 @@ class MauiStoreListEntry(Gtk.Box):
         Populate widgets with data
         '''
         self.package_name.set_text(package.get("name"))
+        self.package_description.set_text(package.get("description"))
+
 
 @Gtk.Template(resource_path='/pm/mirko/maui-store/list.ui')
 class MauiStoreList(Gtk.Box):
