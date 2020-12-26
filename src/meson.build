@@ -25,6 +25,7 @@ mauistore_sources = [
   '__init__.py',
   'main.py',
   'window.py',
+  'repository.py',
 ]
 
 install_data(mauistore_sources, install_dir: moduledir)
