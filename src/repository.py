@@ -28,21 +28,6 @@ class MauiStoreRepository:
     repository_package = repository_base_url + "%s/package.json"
     repository_local = "%s/.local/MauiStore" % Path.home()
     repository_local_index = "%s/repository.json" % repository_local
-    package = {
-        "name": "",
-        "productName": "",
-        "version": "",
-        "license": "",
-        "description": "",
-        "author": {
-            "name": "",
-            "email": "",
-            "url": ""
-        },
-        "homepage": "",
-        "icon": "",
-        "screenshot": ""
-    }
     cache_packages = []
 
     def __init__(self, **kwargs):
@@ -71,6 +56,18 @@ class MauiStoreRepository:
             with urllib.request.urlopen(self.repository_package % name) as url:
                 package = json.loads(url.read().decode("utf-8"))
 
+                '''
+                Fix missing items in package
+                '''
+                if "license" not in package:
+                    package["license"] = "Undefined"
+                if "author" not in package:
+                    package["license"] = "Undefined"
+                if "license" not in package:
+                    package["license"] = "Undefined"
+                if "description" not in package:
+                    package["license"] = "No description provided."
+
                 return package
         except:
             logging.warning("No valid manifest found for `%s`" % name)
@@ -84,8 +81,7 @@ class MauiStoreRepository:
 
         try:
             local_repository = open(self.repository_local_index)
-            packages = json.load(local_repository)
-            print(packages)
+            cache_packages = json.load(local_repository)
             local_repository.close()
             local=True
             logging.info("Local repository found.")
@@ -95,37 +91,31 @@ class MauiStoreRepository:
             with urllib.request.urlopen(self.repository_index) as url:
                 packages = json.loads(url.read().decode("utf-8"))
 
-        '''
-        TODO: remove filter  0:20
-        '''
-        for package in packages[0:20]:
-            package_data = self.get_package(package.get("title"))
+            '''
+            TODO: remove filter  0:3
+            '''
+            for package in packages[0:3]:
+                package_data = self.get_package(package.get("title"))
 
-            if package_data:
-                new_package = self.package
-                if "name" in package_data:
-                    new_package["name"] = package_data["name"]
-                if "description" in package_data:
-                    new_package["description"] = package_data["description"]
-                if "version" in package_data:
-                    new_package["version"] = package_data["version"]
-                if "license" in package_data:
-                    new_package["license"] = package_data["license"]
-                if "author" in package_data:
-                    new_package["author"] = package_data["author"]
+                if package_data:
+                    new_package = {
+                        "name": package_data["name"],
+                        "version": package_data["version"],
+                        "license": package_data["license"],
+                        "description": package_data["description"],
+                        "author": package_data["author"],
+                        "homepage": "",
+                        "icon": "",
+                        "screenshot": ""
+                    }
+                    cache_packages.append(new_package)
 
-                cache_packages.append(new_package)
-
-        self.cache_packages = cache_packages
-
-        '''
-        Cache packages to local repository
-        '''
-        if not local:
             logging.info("Caching packages to local repository ..")
             with open(self.repository_local_index, "w") as local_repository:
                 json.dump(cache_packages, local_repository, indent=4)
                 local_repository.close()
+
+        self.cache_packages = cache_packages
 
 
     '''
