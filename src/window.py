@@ -17,6 +17,9 @@
 
 from gi.repository import Gtk
 
+from .repository import MauiStoreRepository
+
+from .pages.list import MauiStoreList
 
 @Gtk.Template(resource_path='/pm/mirko/maui-store/window.ui')
 class MauiStoreWindow(Gtk.ApplicationWindow):
@@ -39,3 +42,25 @@ class MauiStoreWindow(Gtk.ApplicationWindow):
         Initialize template
         '''
         self.init_template()
+
+        '''
+        Common variables
+        '''
+        self.repository = MauiStoreRepository()
+
+        '''
+        Create pages
+        '''
+        page_list = MauiStoreList(self)
+
+        '''
+        Set reusable variables
+        '''
+        self.page_list = page_list
+
+        '''
+        Add pages to stack_main
+        '''
+        self.stack_main.add_titled(page_list, "page_list", "List")
+
+        
